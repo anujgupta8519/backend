@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const playlistSchema = new mongoose.Schema(
     {
         name: {
@@ -12,17 +11,16 @@ const playlistSchema = new mongoose.Schema(
         },
         videos: [
             {
-                types: mongoose.Schema.Types.ObjectId,
-                ref: 'Video'
-
-            }
-        ],
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Video'}],
         owner:{
             type:mongoose.Schema.Types.ObjectId,
             ref:'User'
         }
 
     },
+
+
     { timestamps: true }
 )
 

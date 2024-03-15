@@ -2,7 +2,7 @@ import jwt  from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/Cloudinary.uploader.js";
+import { deleteonCloudinary, uploadOnCloudinary } from "../utils/Cloudinary.uploader.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 
@@ -256,6 +256,15 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Error while uploading avtar")
         
      }
+     const user1 = await User.findById(req.user?._id);
+
+     if (!user1) {
+        throw new ApiError(404, "User not found")
+     }
+
+     await deleteonCloudinary(user1?.avatar);
+
+
      const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
@@ -282,7 +291,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
      if (!coverImage.url) {
         throw new ApiError(500, "Error while uploading cover image")
      }
-     const user = await User.findByIdAndUpdate(
+
+
+    const user1 = await User.findById(req.user?._id);
+
+    if (!user1) {
+        throw new ApiError(404, "User not found")
+    }
+
+    await deleteonCloudinary(user1?.coverImage);
+
+         const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set:{
@@ -293,6 +312,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             new:true
         }
      ).select("-password -refreshToken")
+
+
+
+
 
      return res.status(200).json(new ApiResponse(200, user, "Cover image updated successfully"))
 
